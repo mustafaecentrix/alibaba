@@ -1,0 +1,27 @@
+Case alibaba
+
+1. Create OS dan set HARDISK OS 50 GB -> Ultradisk
+2. Add disk baru 20 GB -> ultradisk -> attach to ECS
+3. fdisk -> ext4 (bukan LVM)
+4. mkfs.ext4 /dev/vdb1
+5. mount /dev/vdb1 /data
+
+Bagaimana cara resize vdb1 ?
+
+- Masuk ke "Storage Snapshot" -> Disk -> More -> resize Disk -> centang online -> set 25 GB -> apply
+
+-> Ketika di reboot -> size belum bertambah -> masih tetap 20
+-> coba stop instance -> start instance -> tidak berubah juga
+-> coba Unmount dari console dan mount lagi di linux , tetap sama
+
+Solusi :
+Gunakan Parted :
+https://www.alibabacloud.com/help/doc-detail/25452.htm?spm=a2c63.p38356.879954.6.77505922WX5gV8#concept-z11-xsh-ydb
+Option 3: Resize existing GPT partitions
+
+  257  umount  /data
+  258  parted  /dev/vdc
+  259  fsck -f /dev/vdc1
+  260  resize2fs /dev/vdc1
+  261  mount /dev/vdc1 /data
+  262  df -PH
